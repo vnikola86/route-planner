@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.navigation {
+  max-height: 90vh;
+  overflow-y: auto;
+}
