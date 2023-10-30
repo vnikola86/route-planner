@@ -27,7 +27,9 @@ function App() {
   const [stopPointCount, setStopPointCount] = useState(2);
   const [selectedPlaces, setSelectedPlaces] = useState([null, null]);
   const [validationMessages, setValidationMessages] = useState([]);
+
   const [isDeleteButtonClicked, setIsDeleteButtonClicked] = useState([]);
+  const [isRouteShown, setIsRouteShown] = useState(false);
 
   const [userLocation, setUserLocation] = useState(null);
   const defaultCenter = { lat: 42.4304, lng: 19.2594 };
@@ -62,10 +64,12 @@ function App() {
 
   // Recalculate the route when stop point is deleted
   useEffect(() => {
-    if (isDeleteButtonClicked.includes(true)) {
+    if (isDeleteButtonClicked.includes(true) && isRouteShown) {
       handleCalculateRoute();
     }
+    
   }, [isDeleteButtonClicked]);
+  
   
   
   // Use the user's location if available, otherwise use the default center
@@ -150,6 +154,7 @@ function App() {
   setDirectionsResponse(directionsResponse);
 
   setIsDeleteButtonClicked([]);
+  setIsRouteShown(true);
   };
 
 
@@ -210,7 +215,8 @@ function App() {
     setSelectedPlaces([null, null]);
     setValidationMessages([]);
     setStopPointCount(2);
-
+    setIsRouteShown(false);
+    
     // Clear the Autocomplete and Input values
     stopPointAutocompleteRefs.current.forEach((autocompleteRef) => {
       if (autocompleteRef) {
@@ -218,18 +224,18 @@ function App() {
         if (origin) {
           origin.value = '';
         }
-
+        
         if (destination) {
           destination.value = '';
         }
-
+        
       }
     });
   };
-
+  
   return (
     console.log('App component re-rendered'),
-    <div className='flex flex-row items-center justify-start h-screen w-screen'>
+    <div className='container-custom'>
       <div className='absolute left-0 top-0 h-full w-full z-10'>
         <GoogleMap
           center={center}
@@ -249,132 +255,130 @@ function App() {
           )}
         </GoogleMap>
       </div>
-      <div className='p-4 rounded-lg m-4 bg-violet-200 shadow-md w-1/4 z-20'>
-        <div className='navigation'>
-          <div className='h-stack flex-start spacing-2'>
-          <div className='flex-grow-1'>
-            <Autocomplete
-              onLoad={(autocomplete) => {
-                stopPointAutocompleteRefs.current[0] = autocomplete;
-              }}
-              onPlaceChanged={() => handlePlaceChanged(0)}
-              >
-              <input
-                type='text'
-                id='origin'
-                placeholder='Origin'
-                className='bg-white mt-4 px-1 py-2 w-full border-2 border-violet-200 rounded focus:border-violet-400 focus:outline-none'
-                defaultValue={stopPoints[0]?.location}
-                onChange={handleInputChange(0)}
-              />
-            </Autocomplete>
-            <div className='text-red-500'>{validationMessages[0]}</div>
-          </div>
-          <div className='flex-grow-1'>
-            <Autocomplete
-              onLoad={(autocomplete) => {
-                stopPointAutocompleteRefs.current[1] = autocomplete;
-              }}
-              onPlaceChanged={() => handlePlaceChanged(1)}
+      <div className='navigation-custom p-4 rounded-lg m-4 bg-violet-200 shadow-md z-20'>
+        <div className='h-stack flex-start spacing-2'>
+        <div className='flex-grow-1'>
+          <Autocomplete
+            onLoad={(autocomplete) => {
+              stopPointAutocompleteRefs.current[0] = autocomplete;
+            }}
+            onPlaceChanged={() => handlePlaceChanged(0)}
             >
-              <input
-                type='text'
-                id='destination'
-                placeholder='Destination'
-                className='bg-white mt-4 px-1 py-2 w-full border-2 border-violet-200 rounded focus:border-violet-400 focus:outline-none'
-                defaultValue={stopPoints[1]?.location}
-                onChange={handleInputChange(1)}
-              />
-            </Autocomplete>
-            <div className='text-red-500'>{validationMessages[1]}</div>
-          </div>
+            <input
+              type='text'
+              id='origin'
+              placeholder='Origin'
+              className='bg-white mt-4 px-1 py-2 w-full border-2 border-violet-200 rounded focus:border-violet-400 focus:outline-none'
+              defaultValue={stopPoints[0]?.location}
+              onChange={handleInputChange(0)}
+            />
+          </Autocomplete>
+          <div className='text-red-500'>{validationMessages[0]}</div>
         </div>
-            <div className='mt-4 flex flex-wrap'>
+        <div className='flex-grow-1'>
+          <Autocomplete
+            onLoad={(autocomplete) => {
+              stopPointAutocompleteRefs.current[1] = autocomplete;
+            }}
+            onPlaceChanged={() => handlePlaceChanged(1)}
+          >
+            <input
+              type='text'
+              id='destination'
+              placeholder='Destination'
+              className='bg-white mt-4 px-1 py-2 w-full border-2 border-violet-200 rounded focus:border-violet-400 focus:outline-none'
+              defaultValue={stopPoints[1]?.location}
+              onChange={handleInputChange(1)}
+            />
+          </Autocomplete>
+          <div className='text-red-500'>{validationMessages[1]}</div>
+        </div>
+      </div>
+          <div className='mt-4 flex flex-wrap'>
+            <button
+              onClick={handleCalculateRoute}
+              className='bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 mr-2 mb-2 h-full rounded'
+            >
+              Show Route
+            </button>
+            <button
+            onClick={handleClearForm}
+              className='bg-green-400 hover:bg-green-500 text-white font-medium py-3 px-4 mb-2 h-full rounded'
+            >
+              Clear
+            </button>
+          </div>
+          <div className='mt-4'>
+            {stopPoints.length > 2 && (
+              <p className='font-bold'>Stop points:</p>
+            )}
+              <ul className='list-none pb-2 pl-0'>
+              {stopPoints.slice(2).map((stopPoint, index) => (
+                  <li key={stopPoint.location+index} className='mb-2'>
+                  <div className='flex flex-wrap space-around'>
+                    <div className='w-4/5 my-1 mr-1'>
+                      <Autocomplete
+                        className='w-full'
+                        onLoad={(autocomplete) => {
+                          stopPointAutocompleteRefs.current[index + 2] = autocomplete;
+                        }}
+                        onPlaceChanged={() => handlePlaceChanged(index + 2)}
+                      >
+                        <input
+                          type='text'
+                          placeholder={`Stop point #${index+1}`}
+                          className='bg-white px-1 py-2 w-full border-2 border-violet-200 rounded focus:border-violet-400 focus:outline-none'
+                          defaultValue={stopPoint.location}
+                          onChange={handleInputChange(index + 2)}
+                        />
+                      </Autocomplete>
+                    </div> 
+                    <button
+                      onClick={() => handleDeleteStopPoint(index + 2)}
+                      className='bg-red-400 hover:bg-red-500 text-white font-medium py-2 px-3 my-1 rounded focus:outline-none focus:ring-2 focus:ring-red-400 h-full'
+                    >
+                      X
+                    </button>
+                  </div>
+                  <div className='text-red-500'>{validationMessages[index + 2]}</div>
+                </li>
+              ))}
+              </ul>
+            {directionsResponse && directionsResponse.routes.length > 0 ? (
+            <div className='mb-2 space-y-2'>
+            <div className='justify-start flex flex-wrap space-y-1 text-gray-600'>
+                <p className='flex flex-wrap space-x-1'>
+                  <span className='font-bold'>Distance: </span><span>{calculateTotalDistance(directionsResponse.routes[0].legs)}</span>
+                </p>
+
+            </div>
+            <div className='justify-start flex flex-wrap space-y-1 text-gray-600'>
+                <p className='flex flex-wrap space-x-1'>
+                  <span className='font-bold'>Duration: </span><span>{calculateTotalDuration(directionsResponse.routes[0].legs)}</span>
+                </p>
+            </div>
+            </div>
+            ) : null }
+            <div className='flex flex-wrap justify-between'>
               <button
-                onClick={handleCalculateRoute}
-                className='bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 mr-2 mb-2 h-full rounded'
-              >
-                Show Route
+                className='bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 px-4 my-2 rounded focus:outline-none focus:ring-2 focus:ring-pink-500'
+                type='button'
+                onClick={handleAddStopPoint}
+                >
+                  Add stop
               </button>
               <button
-              onClick={handleClearForm}
-                className='bg-green-400 hover:bg-green-500 text-white font-medium py-3 px-4 mb-2 h-full rounded'
+                type='button'
+                className='text-purple-600 hover:text-purple-700 my-2 mr-2'
+                onClick={() => {
+                  map.panTo(center);
+                  map.setZoom(15);
+                }}
               >
-                Clear
+                <FaCompass className='text-5xl' />
               </button>
             </div>
-            {directionsResponse && directionsResponse.routes.length > 0 ? (
-              <div className='mt-4 space-y-2'>
-              <div className='justify-start flex flex-wrap space-y-1 text-gray-600'>
-                  <p className='flex flex-wrap space-x-1'>
-                    <span className='font-bold'>Distance: </span><span>{calculateTotalDistance(directionsResponse.routes[0].legs)}</span>
-                  </p>
-
-              </div>
-              <div className='justify-start flex flex-wrap space-y-1 text-gray-600'>
-                  <p className='flex flex-wrap space-x-1'>
-                    <span className='font-bold'>Duration: </span><span>{calculateTotalDuration(directionsResponse.routes[0].legs)}</span>
-                  </p>
-              </div>
-              </div>
-              ) : null }
-              <div className='mt-4'>
-                {stopPoints.length > 2 && (
-                  <p className='font-bold py-2'>Stop points:</p>
-                )}
-                  <ul className='list-none py-2 pl-0'>
-                  {stopPoints.slice(2).map((stopPoint, index) => (
-                      <li key={stopPoint.location+index} className='mb-2'>
-                      <div className='flex flex-wrap space-around'>
-                        <div className='w-4/5 my-1 mr-1'>
-                          <Autocomplete
-                            className='w-full'
-                            onLoad={(autocomplete) => {
-                              stopPointAutocompleteRefs.current[index + 2] = autocomplete;
-                            }}
-                            onPlaceChanged={() => handlePlaceChanged(index + 2)}
-                          >
-                            <input
-                              type='text'
-                              placeholder={`Stop point #${index+1}`}
-                              className='bg-white px-1 py-2 w-full border-2 border-violet-200 rounded focus:border-violet-400 focus:outline-none'
-                              defaultValue={stopPoint.location}
-                              onChange={handleInputChange(index + 2)}
-                            />
-                          </Autocomplete>
-                        </div> 
-                        <button
-                          onClick={() => handleDeleteStopPoint(index + 2)}
-                          className='bg-red-400 hover:bg-red-500 text-white font-medium py-2 px-3 my-1 mr-2 rounded focus:outline-none focus:ring-2 focus:ring-red-400 h-full'
-                        >
-                          X
-                        </button>
-                      </div>
-                      <div className='text-red-500'>{validationMessages[index + 2]}</div>
-                    </li>
-                  ))}
-                  </ul>
-                <div className='flex flex-wrap justify-between'>
-                  <button
-                    className='bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 px-4 my-2 rounded focus:outline-none focus:ring-2 focus:ring-pink-500'
-                    type='button'
-                    onClick={handleAddStopPoint}
-                    >
-                      Add stop
-                  </button>
-                  <button
-                    type='button'
-                    className='text-purple-600 hover:text-purple-700 my-2 mr-2'
-                    onClick={() => {
-                      map.panTo(center);
-                      map.setZoom(15);
-                    }}
-                  >
-                    <FaCompass className='text-5xl' />
-                  </button>
-                </div>
-              </div>
-        </div>
+          </div>
       </div>
     </div>
   );
