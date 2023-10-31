@@ -234,7 +234,6 @@ function App() {
   };
   
   return (
-    console.log('App component re-rendered'),
     <div className='container-custom'>
       <div className='absolute left-0 top-0 h-full w-full z-10'>
         <GoogleMap

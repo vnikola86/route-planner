@@ -1,70 +1,113 @@
-# Getting Started with Create React App
+### Route Planner
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+***A React-based application that enables users to plan routes with multiple stops using the Google Maps API.***
 
-In the project directory, you can run:
+---
 
-### `npm start`
+### Table of Contents
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. [Project Setup](#1-project-setup)
+2. [Usage](#2-usage)
+3. [Styling](#3-styling)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+### 1. Project Setup
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This section provides an overview of how to set up the project on your local machine.
 
-### `npm run build`
+- **Prerequisites**. Ensure you have the following programs installed on your computer:
+    * git
+    * Node.js
+    * npm
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Clone the project repository**. In your terminal, clone the project repository using the following git command:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    git clone https://github.com/vnikola86/route-planner
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Navigate to the project directory**. Navigate to the directory of the cloned route-planner repository:
 
-### `npm run eject`
+    cd route-planner
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Install the required dependencies**. In the route-planner directory, run the following command:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    npm install
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **Setting up the REACT_APP_GOOGLE_MAPS_API_KEY**. For the web application to work properly, you'll need to store your Google Maps Platform API key locally in the project. Follow these steps to set up the key:
+    - Visit the Google Cloud Platform Console at https://console.cloud.google.com/.
+    - Obtain an API key for the Google Maps Platform.
+    - Create a file named '.env.local' in the root directory of your project.
+    - Add the following line to the '.env.local' file:
+        REACT_APP_GOOGLE_MAPS_API_KEY=YOUR_API_KEY
+    - Replace YOUR_API_KEY with the API key you obtained from the Google Cloud Platform Console.
+    - Save the '.env.local' file.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
+### 2. Usage
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+This section provides instructions on how to run the Route Planner application and explains its main features and functionalities.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Run the Application**. To start the Route Planner, navigate to the route-planner directory and run the following command:
 
-### Code Splitting
+    npm start
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+    This will start the application in development mode, and you can access it in your web browser by opening http://localhost:3000.
 
-### Analyzing the Bundle Size
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
+- **Main features and functionalities**.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+    When the page loads, a Google Map is displayed, showing your current location if geolocation is enabled in your browser.
 
-### Advanced Configuration
+    Use the input fields for "Origin" and "Destination" to define your starting and ending points.
+    Click the "Add Stop" button to include additional stops along your route.
+    Autocomplete ensures you enter valid addresses for each location.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+    To view the route connecting all locations, click the "Show Route" button.
 
-### Deployment
+    The application uses the Google Maps Directions API to determine the optimal route between your selected locations, which is then displayed on the map.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+    To remove a specific stop point, click the "X" button next to the stop point. The map will then display the updated route.
 
-### `npm run build` fails to minify
+    To clear the entire route, click the "Clear" button.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    To return to your current location, click the compass icon. If geolocation is not enabled in your browser, the default location will be displayed. You can configure the default location in the code.
+
+
+### 3. Styling
+
+This section provides an overview of the project's styling approach, which uses Tailwind CSS to achieve efficient and consistent design.
+
+  Note: Tailwind CSS dependencies are installed automatically when you run 'npm install', as described in the Project Setup section. You do not need to install them separately. However to manually install, configure and intergrate Tailwind CSS, key guidelines are included.
+
+  - **Installation**. To set up Tailwind CSS, follow these steps:
+
+    - Install Tailwind CSS via npm:
+
+        npm install -D tailwindcss
+
+    - Generate your `tailwind.config.js` file:
+
+        npx tailwindcss init
+
+  - **Template Paths Configuration**. Make sure to configure your template paths in the `tailwind.config.js` file:
+
+    module.exports = {
+      content: [
+        "./src/**/*.{js,jsx,ts,tsx}",
+      ],
+      theme: {
+        extend: {},
+      },
+      plugins: [],
+    }
+
+  - **Tailwind CSS Directives**. Add the Tailwind directives to your `./src/index.css` file:
+
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
+  - **Official Tailwind CSS documentation**:
+    https://tailwindcss.com/docs/installation
